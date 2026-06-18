@@ -1,0 +1,148 @@
+@import 'tailwindcss';
+
+/* Polices d'icônes du thème (assets, conservés tels quels) */
+@import './styles/flaticon.css';
+@import './styles/icomoon.css';
+@import './styles/ionicons.min.css';
+@import './styles/open-iconic-bootstrap.min.css';
+
+/* ----------------------------------------------------------------------------
+   Tokens du thème TLA (ex-Fox / NEOTIC) — exposés en utilitaires Tailwind
+   ex: bg-primary, text-dark, font-sans
+---------------------------------------------------------------------------- */
+@theme {
+  --font-sans: 'Poppins', Arial, sans-serif;
+
+  --color-primary: #fd5f00;
+  --color-primary-light: #fda638;
+  --color-dark: #0d1128;
+  --color-body: #666666;
+  --color-accent-green: #8cc152;
+  --color-accent-red: #f1453d;
+  --color-accent-purple: #5d50c6;
+
+  --breakpoint-xl: 1200px;
+}
+
+/* ----------------------------------------------------------------------------
+   Base
+---------------------------------------------------------------------------- */
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.8;
+    font-weight: 400;
+    color: var(--color-body);
+    background: #fff;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    line-height: 1.5;
+    color: rgb(0 0 0 / 0.8);
+    font-weight: 400;
+  }
+
+  a {
+    color: var(--color-primary);
+    transition: 0.3s all ease;
+  }
+  a:hover,
+  a:focus {
+    color: var(--color-primary);
+    text-decoration: none;
+    outline: none !important;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Révélation au scroll (remplace ftco-animate + waypoints)
+---------------------------------------------------------------------------- */
+@layer utilities {
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.8s cubic-bezier(0.19, 1, 0.22, 1),
+      transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+    will-change: opacity, transform;
+  }
+  .reveal-left {
+    transform: translateX(-20px);
+  }
+  .reveal-right {
+    transform: translateX(20px);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Carrousel des coachs : flèches de navigation aux couleurs du thème
+---------------------------------------------------------------------------- */
+.teachers-swiper {
+  --swiper-navigation-color: var(--color-primary);
+  --swiper-navigation-size: 26px;
+}
+
+/* ----------------------------------------------------------------------------
+   Loader plein écran (repris à l'identique du template)
+---------------------------------------------------------------------------- */
+.ftco-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.4s ease-out,
+    visibility 0s linear 0s;
+}
+.ftco-loader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.4s ease-out,
+    visibility 0s linear 0.4s;
+}
+.ftco-loader .circular {
+  animation: loader-rotate 2s linear infinite;
+  width: 48px;
+  height: 48px;
+}
+.ftco-loader .path {
+  stroke-dasharray: 1, 200;
+  stroke-dashoffset: 0;
+  animation: loader-dash 1.5s ease-in-out infinite;
+  stroke-linecap: round;
+}
+@keyframes loader-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes loader-dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -136px;
+  }
+}
