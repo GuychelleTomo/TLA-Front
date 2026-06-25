@@ -1,20 +1,16 @@
-import { useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Autoplay } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import { TeacherCard } from '@/components/cards/TeacherCard'
-import { TeacherModal } from '@/components/teachers/TeacherModal'
 import { SectionHeading } from '@/components/ui/SectionHeading'
-import { teachers, type Teacher } from '@/data/teachers'
+import { teachers } from '@/data/teachers'
 
 const subtitle =
   'Separated they live in. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country'
 
-/** Section équipe pédagogique ("Coache certifiés") — carrousel + cartes cliquables (biographie). */
+/** Section équipe pédagogique ("Coache certifiés") — carrousel + cartes menant au profil. */
 export function TeachersSection() {
-  const [selected, setSelected] = useState<Teacher | null>(null)
-
   return (
     <section className="bg-gray-100 py-24">
       <div className="mx-auto max-w-[1400px] px-4">
@@ -36,13 +32,11 @@ export function TeachersSection() {
         >
           {teachers.map((teacher) => (
             <SwiperSlide key={teacher.slug} className="h-auto pb-2">
-              <TeacherCard {...teacher} onClick={() => setSelected(teacher)} />
+              <TeacherCard {...teacher} />
             </SwiperSlide>
           ))}
         </Swiper>
       </div>
-
-      <TeacherModal teacher={selected} onClose={() => setSelected(null)} />
     </section>
   )
 }

@@ -4,7 +4,9 @@ import { Layout } from '@/components/layout/Layout'
 import { HomePage } from '@/pages/HomePage'
 import { AboutPage } from '@/pages/AboutPage'
 import { CoursesPage } from '@/pages/CoursesPage'
+import { CourseDetailPage } from '@/pages/CourseDetailPage'
 import { TeacherPage } from '@/pages/TeacherPage'
+import { TeacherDetailPage } from '@/pages/TeacherDetailPage'
 import { BlogPage } from '@/pages/BlogPage'
 import { BlogSinglePage } from '@/pages/BlogSinglePage'
 import { GalleryPage } from '@/pages/GalleryPage'
@@ -45,7 +47,9 @@ export default function App() {
           <Route index element={<HomePage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="formations" element={<CoursesPage />} />
+          <Route path="formations/:id" element={<CourseDetailPage />} />
           <Route path="equipe" element={<TeacherPage />} />
+          <Route path="equipe/:slug" element={<TeacherDetailPage />} />
           <Route path="blog" element={<BlogPage />} />
           <Route path="blog/:slug" element={<BlogSinglePage />} />
           <Route path="galerie" element={<GalleryPage />} />

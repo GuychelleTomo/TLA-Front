@@ -1,79 +1,99 @@
 import { Link } from 'react-router-dom'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import { Reveal } from '@/components/ui/Reveal'
-import { schedules, slots, type Session } from '@/data/schedules'
+import { waves, timeSlots, groups, clubs } from '@/data/schedules'
 
-const formatStyle: Record<Session['format'], string> = {
-  Présentiel: 'bg-primary/10 text-primary',
-  'En ligne': 'bg-accent-purple/10 text-accent-purple',
-  Hybride: 'bg-accent-green/10 text-accent-green',
-}
-
-/** Section "Horaires des formations" : créneaux types + emploi du temps. */
+/** Section "Emploi du temps" : vagues, grille des deux groupes et clubs linguistiques. */
 export function ScheduleSection() {
   return (
     <section className="bg-gray-100 py-24">
       <div className="mx-auto max-w-6xl px-4">
         <SectionHeading
-          title="des formations"
-          highlight="Horaires"
-          subtitle="Des créneaux flexibles, en présentiel ou en ligne, pour s'adapter à votre emploi du temps."
+          title="du temps"
+          highlight="Emploi"
+          subtitle="Cours de 2 heures, de 08H à 20H. Choisissez votre vague et votre groupe selon vos disponibilités."
         />
 
-        {/* Créneaux types */}
-        <div className="mb-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {slots.map((slot, i) => (
-            <Reveal key={slot.title} delay={i * 100}>
-              <div className="h-full rounded bg-white p-6 text-center shadow-sm">
+        {/* Vagues */}
+        <div className="mb-14 grid gap-6 sm:grid-cols-3">
+          {waves.map((wave, i) => (
+            <Reveal key={wave.title} delay={i * 100}>
+              <div className="h-full rounded-xl bg-white p-6 text-center shadow-sm ring-1 ring-black/5">
                 <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-3xl text-white">
-                  <span className={slot.icon} />
+                  <span className={wave.icon} />
                 </div>
-                <h3 className="mb-1 text-lg text-black/80">{slot.title}</h3>
-                <p className="text-sm">{slot.text}</p>
+                <h3 className="text-lg text-black/80">{wave.title}</h3>
+                <p className="text-sm font-semibold text-primary">{wave.range}</p>
+                <p className="mt-1 text-sm text-black/60">{wave.text}</p>
               </div>
             </Reveal>
           ))}
         </div>
 
-        {/* Emploi du temps */}
-        <Reveal className="overflow-x-auto rounded-lg bg-white shadow-sm">
-          <table className="w-full min-w-[640px] text-left text-sm">
-            <thead>
-              <tr className="bg-dark text-white">
-                <th className="px-6 py-4 font-medium">Langue</th>
-                <th className="px-6 py-4 font-medium">Niveau</th>
-                <th className="px-6 py-4 font-medium">Jours</th>
-                <th className="px-6 py-4 font-medium">Horaire</th>
-                <th className="px-6 py-4 font-medium">Format</th>
-              </tr>
-            </thead>
-            <tbody>
-              {schedules.map((s, i) => (
-                <tr
-                  key={`${s.language}-${s.level}`}
-                  className={i % 2 === 1 ? 'bg-gray-50' : 'bg-white'}
-                >
-                  <td className="px-6 py-4 font-semibold text-black/80">{s.language}</td>
-                  <td className="px-6 py-4">{s.level}</td>
-                  <td className="px-6 py-4">{s.days}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{s.time}</td>
-                  <td className="px-6 py-4">
-                    <span className={`rounded-full px-3 py-1 text-xs font-medium ${formatStyle[s.format]}`}>
-                      {s.format}
-                    </span>
-                  </td>
-                </tr>
+        {/* Grilles des deux groupes */}
+        <div className="grid gap-8 lg:grid-cols-2">
+          {groups.map((group) => (
+            <Reveal key={group.name} className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/5">
+              <div className={`flex items-center justify-between px-6 py-4 text-white ${group.accent}`}>
+                <h3 className="text-lg font-semibold">{group.name}</h3>
+                <span className="text-sm text-white/85">{group.days.join(' · ')}</span>
+              </div>
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-black/10 text-black/50">
+                    <th className="px-5 py-3 font-medium">Horaire</th>
+                    {group.days.map((d) => (
+                      <th key={d} className="px-5 py-3 font-medium">{d}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {timeSlots.map((slot, i) => (
+                    <tr key={slot} className={i % 2 === 1 ? 'bg-gray-50' : 'bg-white'}>
+                      <td className="whitespace-nowrap px-5 py-3 font-semibold text-black/80">{slot}</td>
+                      {group.days.map((d) => (
+                        <td key={d} className="px-5 py-3">
+                          <span className="inline-flex items-center gap-1.5 text-black/60">
+                            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                            Cours
+                          </span>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Reveal>
+          ))}
+        </div>
+
+        {/* Clubs linguistiques */}
+        <Reveal className="mt-12">
+          <div className="rounded-xl bg-dark p-8 text-white">
+            <div className="mb-6 flex items-center gap-3">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-xl">
+                <i className="flaticon-reading" />
+              </span>
+              <div>
+                <h3 className="text-xl font-semibold">Clubs linguistiques</h3>
+                <p className="text-sm text-white/60">Pratiquez la langue dans une ambiance conviviale.</p>
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {clubs.map((club) => (
+                <div key={club.day} className="rounded-lg bg-white/5 p-5 ring-1 ring-white/10">
+                  <p className="text-sm uppercase tracking-wide text-primary-light">{club.day}</p>
+                  <p className="mt-1 text-lg font-semibold">{club.time}</p>
+                  <p className="text-sm text-white/60">{club.activity}</p>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </div>
         </Reveal>
 
-        <p className="mt-6 text-center text-sm text-black/60">
+        <p className="mt-8 text-center text-sm text-black/60">
           Besoin d'un autre créneau ? Nous proposons aussi des cours particuliers sur mesure.{' '}
-          <Link to="/contact" className="text-primary">
-            Contactez-nous
-          </Link>
-          .
+          <Link to="/contact" className="text-primary">Contactez-nous</Link>.
         </p>
       </div>
     </section>

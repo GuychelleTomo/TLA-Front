@@ -9,22 +9,46 @@ export const services: Service[] = [
   {
     icon: 'flaticon-teacher',
     title: 'Formateurs Experts & Natifs',
-    text: 'Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.',
+    text: 'Des coachs certifiés et passionnés qui adaptent chaque parcours à votre objectif.',
   },
   {
     icon: 'flaticon-reading',
     title: '5 Langues Clés',
-    text: 'Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.',
+    text: 'Anglais, Espagnol, Portugais, Chinois et Italien — pour tous les niveaux.',
   },
   {
     icon: 'flaticon-books',
     title: 'Préparation aux Examens',
-    text: 'Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.',
+    text: 'TOEFL, IELTS, DELE, HSK… réussissez vos certifications internationales.',
   },
   {
     icon: 'flaticon-diploma',
     title: 'Horaires Flexibles',
-    text: 'Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic.',
+    text: 'Vagues Matinée, Midi et Soirée, en présentiel comme en ligne.',
+  },
+]
+
+/** Prestations linguistiques de TLA, présentées sur la page Formation & Services. */
+export const proServices: Service[] = [
+  {
+    icon: 'flaticon-jigsaw',
+    title: 'Traduction événementielle & en entreprise',
+    text: "Traduction professionnelle de vos échanges, contenus et documents d'entreprise lors de vos événements.",
+  },
+  {
+    icon: 'flaticon-books',
+    title: 'Traduction orale & des documents',
+    text: 'Traductions orales et manuscrites de vos documents officiels, administratifs ou personnels.',
+  },
+  {
+    icon: 'flaticon-teacher',
+    title: 'Interprétation événementielle & privée',
+    text: 'Interprètes qualifiés pour vos conférences, réunions, cérémonies et rendez-vous privés.',
+  },
+  {
+    icon: 'flaticon-diploma',
+    title: 'Maître de cérémonie polyglotte',
+    text: "Animation multilingue de vos cérémonies et événements par un maître de cérémonie expérimenté.",
   },
 ]
 
