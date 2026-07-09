@@ -1,21 +1,40 @@
 import { Link, useParams } from 'react-router-dom'
 import { PageHero } from '@/components/ui/PageHero'
 import { Reveal } from '@/components/ui/Reveal'
-import { courses, enrollment } from '@/data/courses'
-
-const enrollItems = [
-  { icon: 'flaticon-diploma', label: 'Début de session', value: enrollment.start },
-  { icon: 'flaticon-kids', label: 'Effectif', value: enrollment.seats },
-  { icon: 'flaticon-reading', label: 'Vagues', value: enrollment.waves },
-  { icon: 'flaticon-security', label: 'Paiement', value: enrollment.payment },
-  { icon: 'flaticon-books', label: 'Matériel', value: enrollment.material },
-  { icon: 'flaticon-teacher', label: 'En ligne', value: enrollment.online },
-]
+import { enrollment as fallbackEnrollment } from '@/data/courses'
+import { useSiteConfig } from '@/context/SiteConfigContext'
+import { useAsync } from '@/hooks/useAsync'
+import { getCourse } from '@/services/content'
 
 /** Page de détail d'une formation (langue) : modules, formules, tarifs, inscription. */
 export function CourseDetailPage() {
   const { id } = useParams()
-  const course = courses.find((c) => c.id === id)
+  const { data: course, loading } = useAsync(() => getCourse(id ?? ''), [id])
+  const { config } = useSiteConfig()
+  const enrollment = config?.enrollment ?? fallbackEnrollment
+
+  const enrollItems = [
+    { icon: 'flaticon-diploma', label: 'Début de session', value: enrollment.start },
+    { icon: 'flaticon-kids', label: 'Effectif', value: enrollment.seats },
+    { icon: 'flaticon-reading', label: 'Vagues', value: enrollment.waves },
+    { icon: 'flaticon-security', label: 'Paiement', value: enrollment.payment },
+    { icon: 'flaticon-books', label: 'Matériel', value: enrollment.material },
+    { icon: 'flaticon-teacher', label: 'En ligne', value: enrollment.online },
+  ]
+
+  if (loading) {
+    return (
+      <>
+        <PageHero
+          title="Formation"
+          crumbs={[{ label: 'Accueil', to: '/' }, { label: 'Formations', to: '/formations' }]}
+        />
+        <section className="py-24 text-center">
+          <p className="text-lg text-black/50">Chargement…</p>
+        </section>
+      </>
+    )
+  }
 
   if (!course) {
     return (
@@ -37,6 +56,10 @@ export function CourseDetailPage() {
     )
   }
 
+  const modules = course.modules ?? []
+  const formules = course.formules ?? []
+  const examPrep = course.examPrep ?? []
+
   const waLink = `https://wa.me/${enrollment.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(
     `Bonjour, je souhaite m'inscrire à la formation en ${course.title}. ${course.title} + OUI`,
   )}`
@@ -45,7 +68,7 @@ export function CourseDetailPage() {
     <>
       <PageHero
         title={course.title}
-        image={course.image}
+        image={course.image ?? undefined}
         crumbs={[
           { label: 'Accueil', to: '/' },
           { label: 'Formations', to: '/formations' },
@@ -63,7 +86,7 @@ export function CourseDetailPage() {
                 style={{ backgroundImage: `url(${course.image})` }}
               />
               <span className="absolute -left-4 -top-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-lg ring-4 ring-white">
-                <img src={course.flag} alt={`Drapeau ${course.title}`} className="h-full w-full object-cover" />
+                <img src={course.flag ?? ''} alt={`Drapeau ${course.title}`} className="h-full w-full object-cover" />
               </span>
             </div>
             <div>
@@ -117,7 +140,7 @@ export function CourseDetailPage() {
             <p className="mt-1 text-black/60">Un programme complet, du débutant au niveau avancé.</p>
           </Reveal>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {course.modules.map((m, i) => (
+            {modules.map((m, i) => (
               <Reveal key={m} delay={(i % 3) * 80}>
                 <div className="flex items-center gap-3 rounded-xl bg-white p-5 shadow-sm ring-1 ring-black/5">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -129,12 +152,12 @@ export function CourseDetailPage() {
             ))}
           </div>
 
-          {course.examPrep.length > 0 && (
+          {examPrep.length > 0 && (
             <Reveal className="mt-8 flex flex-wrap items-center gap-3 rounded-xl bg-dark p-6 text-white">
               <span className="flex items-center gap-2 font-semibold">
                 <i className="flaticon-diploma text-xl text-primary-light" /> Préparation aux examens :
               </span>
-              {course.examPrep.map((e) => (
+              {examPrep.map((e) => (
                 <span key={e} className="rounded-full bg-white/10 px-3 py-1 text-sm ring-1 ring-white/15">
                   {e}
                 </span>
@@ -152,7 +175,7 @@ export function CourseDetailPage() {
             <p className="mt-1 text-black/60">Choisissez la formule qui correspond à votre profil et à votre objectif.</p>
           </Reveal>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {course.formules.map((f, i) => (
+            {formules.map((f, i) => (
               <Reveal key={f.name} delay={(i % 4) * 80}>
                 <div
                   className={`relative flex h-full flex-col rounded-2xl p-6 shadow-sm transition hover:shadow-lg ${
@@ -165,7 +188,7 @@ export function CourseDetailPage() {
                     </span>
                   )}
                   <span className={`flex h-12 w-12 items-center justify-center rounded-full text-2xl ${f.featured ? 'bg-primary text-white' : 'bg-primary/10 text-primary'}`}>
-                    <span className={f.icon} />
+                    <span className={f.icon ?? undefined} />
                   </span>
                   <h4 className={`mt-4 text-lg font-bold ${f.featured ? 'text-white' : 'text-dark'}`}>{f.name}</h4>
                   <p className={`text-sm ${f.featured ? 'text-white/60' : 'text-black/50'}`}>{f.audience}</p>

@@ -1,4 +1,4 @@
-import type { Testimonial } from '@/data/testimonials'
+import type { Testimonial } from '@/types/content'
 
 /** Carte de témoignage (utilisée dans le carrousel Swiper). */
 export function TestimonialCard({ name, role, image, text }: Testimonial) {
@@ -6,7 +6,7 @@ export function TestimonialCard({ name, role, image, text }: Testimonial) {
     <div className="flex gap-4 px-4 py-8">
       <div
         className="h-24 w-24 shrink-0 rounded-full bg-cover bg-center"
-        style={{ backgroundImage: `url(${image})` }}
+        style={{ backgroundImage: `url(${image ?? ''})` }}
       />
       <div>
         <span className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white">

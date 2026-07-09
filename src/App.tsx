@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
+import { SiteConfigProvider } from '@/context/SiteConfigContext'
 import { Layout } from '@/components/layout/Layout'
 import { HomePage } from '@/pages/HomePage'
 import { AboutPage } from '@/pages/AboutPage'
@@ -40,7 +41,7 @@ function Loader() {
 
 export default function App() {
   return (
-    <>
+    <SiteConfigProvider>
       <Loader />
       <Routes>
         <Route element={<Layout />}>
@@ -56,6 +57,6 @@ export default function App() {
           <Route path="contact" element={<ContactPage />} />
         </Route>
       </Routes>
-    </>
+    </SiteConfigProvider>
   )
 }

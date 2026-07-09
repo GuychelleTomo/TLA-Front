@@ -1,4 +1,4 @@
-import type { Service } from '@/data/services'
+import type { Service } from '@/types/content'
 import { cn } from '@/lib/cn'
 
 type ServiceCardProps = Service & { dark?: boolean }

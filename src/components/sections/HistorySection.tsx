@@ -1,9 +1,13 @@
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import { Reveal } from '@/components/ui/Reveal'
-import { milestones } from '@/data/about'
+import { useAsync } from '@/hooks/useAsync'
+import { getAbout } from '@/services/content'
 
 /** Section "Notre Historique" sous forme de frise chronologique. */
 export function HistorySection() {
+  const { data: about, loading } = useAsync(() => getAbout(), [])
+  const milestones = about?.milestones ?? []
+
   return (
     <section className="py-24">
       <div className="mx-auto max-w-6xl px-4">
@@ -13,7 +17,7 @@ export function HistorySection() {
           subtitle="De ses débuts à aujourd'hui, TLA n'a cessé de grandir aux côtés de ses apprenants."
         />
 
-        <div className="relative">
+        <div className="relative" style={loading ? { minHeight: '440px' } : undefined}>
           {/* Ligne verticale (desktop) */}
           <div className="absolute left-1/2 top-0 hidden h-full w-px -translate-x-1/2 bg-primary/20 md:block" />
 

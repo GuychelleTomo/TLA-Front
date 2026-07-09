@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
-import type { Teacher } from '@/data/teachers'
+import type { Teacher } from '@/types/content'
 
 /** Carte coach cliquable (mène à la page de détail du coach). */
-export function TeacherCard({ slug, name, role, image, bio, specialty, links }: Teacher) {
+export function TeacherCard({ slug, name, role, image, bio, specialty, links = [] }: Teacher) {
   return (
     <Link
       to={`/equipe/${slug}`}
@@ -11,7 +11,7 @@ export function TeacherCard({ slug, name, role, image, bio, specialty, links }: 
       <div className="relative overflow-hidden">
         <div
           className="h-64 bg-cover bg-center transition duration-500 group-hover:scale-105"
-          style={{ backgroundImage: `url(${image})` }}
+          style={{ backgroundImage: `url(${image ?? ''})` }}
         />
         <span className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-primary shadow">
           <i className="ion-ios-globe" /> {specialty}
@@ -27,7 +27,7 @@ export function TeacherCard({ slug, name, role, image, bio, specialty, links }: 
             {links.slice(0, 4).map((link) => (
               <li key={link.label}>
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-black/50 transition group-hover:bg-primary group-hover:text-white">
-                  <span className={link.icon} />
+                  <span className={link.icon ?? undefined} />
                 </span>
               </li>
             ))}

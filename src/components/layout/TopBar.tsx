@@ -1,9 +1,13 @@
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
-import { contact } from '@/data/site'
+import { contact as fallbackContact } from '@/data/site'
+import { useSiteConfig } from '@/context/SiteConfigContext'
 
 /** Bandeau supérieur blanc : marque + email/téléphone + bouton "Apply now". */
 export function TopBar() {
+  const { config } = useSiteConfig()
+  const contact = config?.contact ?? fallbackContact
+
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-6xl px-4">

@@ -1,13 +1,20 @@
 import { Link } from 'react-router-dom'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import { Reveal } from '@/components/ui/Reveal'
-import { waves, timeSlots, groups, clubs } from '@/data/schedules'
+import { useAsync } from '@/hooks/useAsync'
+import { getTimetable } from '@/services/content'
 
 /** Section "Emploi du temps" : vagues, grille des deux groupes et clubs linguistiques. */
 export function ScheduleSection() {
+  const { data: timetable, loading } = useAsync(() => getTimetable(), [])
+  const waves = timetable?.waves ?? []
+  const timeSlots = timetable?.timeSlots ?? []
+  const groups = timetable?.groups ?? []
+  const clubs = timetable?.clubs ?? []
+
   return (
     <section className="bg-gray-100 py-24">
-      <div className="mx-auto max-w-6xl px-4">
+      <div className="mx-auto max-w-6xl px-4" style={loading ? { minHeight: '900px' } : undefined}>
         <SectionHeading
           title="du temps"
           highlight="Emploi"
@@ -20,7 +27,7 @@ export function ScheduleSection() {
             <Reveal key={wave.title} delay={i * 100}>
               <div className="h-full rounded-xl bg-white p-6 text-center shadow-sm ring-1 ring-black/5">
                 <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-3xl text-white">
-                  <span className={wave.icon} />
+                  <span className={wave.icon ?? undefined} />
                 </div>
                 <h3 className="text-lg text-black/80">{wave.title}</h3>
                 <p className="text-sm font-semibold text-primary">{wave.range}</p>
@@ -34,7 +41,7 @@ export function ScheduleSection() {
         <div className="grid gap-8 lg:grid-cols-2">
           {groups.map((group) => (
             <Reveal key={group.name} className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/5">
-              <div className={`flex items-center justify-between px-6 py-4 text-white ${group.accent}`}>
+              <div className={`flex items-center justify-between px-6 py-4 text-white ${group.accent ?? 'bg-primary'}`}>
                 <h3 className="text-lg font-semibold">{group.name}</h3>
                 <span className="text-sm text-white/85">{group.days.join(' · ')}</span>
               </div>

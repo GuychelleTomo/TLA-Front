@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import type { Course } from '@/data/courses'
+import type { Course } from '@/types/content'
 
 /** Carte d'une formation (langue) menant à la page de détail. */
 export function CourseCard({ id, flag, level, format, duration, title, excerpt }: Course) {
@@ -10,7 +10,7 @@ export function CourseCard({ id, flag, level, format, duration, title, excerpt }
     >
       <div className="relative h-[180px] w-full overflow-hidden bg-gray-100">
         <img
-          src={flag}
+          src={flag ?? ''}
           alt={`Drapeau — ${title}`}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />

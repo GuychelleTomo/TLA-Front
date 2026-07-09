@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
-import { contact, navLinks, socials } from '@/data/site'
-import { posts } from '@/data/posts'
+import { contact as fallbackContact, navLinks, socials as fallbackSocials } from '@/data/site'
+import { useSiteConfig } from '@/context/SiteConfigContext'
+import { useAsync } from '@/hooks/useAsync'
+import { getPosts } from '@/services/content'
 
 function Heading({ children }: { children: string }) {
   return <h2 className="mb-4 text-lg font-normal text-white">{children}</h2>
@@ -8,6 +10,11 @@ function Heading({ children }: { children: string }) {
 
 /** Pied de page : 4 widgets + copyright. */
 export function Footer() {
+  const { config } = useSiteConfig()
+  const contact = config?.contact ?? fallbackContact
+  const socials = config?.socials ?? fallbackSocials
+  const { data: posts } = useAsync(() => getPosts(), [])
+
   return (
     <footer className="bg-dark py-20 text-white/70">
       <div className="mx-auto max-w-6xl px-4">
@@ -39,12 +46,12 @@ export function Footer() {
           <div>
             <Heading>Articles récents</Heading>
             <div className="space-y-5">
-              {posts.slice(0, 2).map((p) => (
+              {(posts ?? []).slice(0, 2).map((p) => (
                 <div key={p.slug} className="flex gap-4">
                   <Link
                     to={`/blog/${p.slug}`}
                     className="h-14 w-14 shrink-0 rounded bg-cover bg-center"
-                    style={{ backgroundImage: `url(${p.image})` }}
+                    style={{ backgroundImage: `url(${p.image ?? ''})` }}
                   />
                   <div>
                     <h3 className="text-sm leading-snug">

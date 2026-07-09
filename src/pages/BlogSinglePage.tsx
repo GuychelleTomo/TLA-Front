@@ -1,19 +1,51 @@
 import { Link, useParams } from 'react-router-dom'
 import { PageHero } from '@/components/ui/PageHero'
-import { posts } from '@/data/posts'
+import { useAsync } from '@/hooks/useAsync'
+import { getPost, getPosts } from '@/services/content'
 
 const tags = ['Life', 'Sport', 'Tech', 'Travel']
 const categories = ['Anglais', 'Espagnol', 'Portugais', 'Chinois', 'Italien']
 
-const body = [
-  'Temporibus ad error suscipit exercitationem hic molestiae totam obcaecati rerum, eius aut, in. Exercitationem atque quidem tempora maiores ex architecto voluptatum aut officia doloremque. Error dolore voluptas, omnis molestias odio dignissimos culpa ex earum nisi consequatur quos odit quasi repellat qui officiis reiciendis incidunt hic non? Debitis commodi aut, adipisci.',
-  'Quisquam esse aliquam fuga distinctio, quidem delectus veritatis reiciendis. Nihil explicabo quod, est eos ipsum. Unde aut non tenetur tempore, nisi culpa voluptate maiores officiis quis vel ab consectetur suscipit veritatis nulla quos quia aspernatur perferendis, libero sint.',
-  'Odit voluptatibus, eveniet vel nihil cum ullam dolores laborum, quo velit commodi rerum eum quidem pariatur! Quia fuga iste tenetur, ipsa vel nisi in dolorum consequatur, veritatis porro explicabo soluta commodi libero voluptatem similique id quidem?',
-]
-
 export function BlogSinglePage() {
   const { slug } = useParams()
-  const post = posts.find((p) => slug?.startsWith(p.slug)) ?? posts[0]
+  const { data: post, loading } = useAsync(() => getPost(slug ?? ''), [slug])
+  const { data: recentPosts } = useAsync(() => getPosts(), [])
+
+  if (loading) {
+    return (
+      <>
+        <PageHero
+          title="Article"
+          crumbs={[{ label: 'Accueil', to: '/' }, { label: 'Blog', to: '/blog' }, { label: 'Article' }]}
+        />
+        <section className="py-24 text-center">
+          <p className="text-lg text-black/50">Chargement…</p>
+        </section>
+      </>
+    )
+  }
+
+  if (!post) {
+    return (
+      <>
+        <PageHero
+          title="Article introuvable"
+          crumbs={[{ label: 'Accueil', to: '/' }, { label: 'Blog', to: '/blog' }, { label: 'Introuvable' }]}
+        />
+        <section className="py-24 text-center">
+          <p className="text-lg text-black/60">Cet article n'existe pas ou a été retiré.</p>
+          <Link
+            to="/blog"
+            className="mt-6 inline-block rounded-full bg-primary px-7 py-3 text-sm font-semibold text-white transition hover:bg-primary-light"
+          >
+            Retour au blog
+          </Link>
+        </section>
+      </>
+    )
+  }
+
+  const paragraphs = (post.content ?? '').split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
 
   return (
     <>
@@ -26,7 +58,7 @@ export function BlogSinglePage() {
           {/* Article */}
           <article className="lg:col-span-2">
             <h2 className="mb-3 text-3xl">{post.title}</h2>
-            {body.map((p, i) => (
+            {paragraphs.map((p, i) => (
               <p key={i} className="mb-4">
                 {p}
               </p>
@@ -87,12 +119,12 @@ export function BlogSinglePage() {
             <div>
               <h3 className="mb-4 text-xl">Articles récents</h3>
               <div className="space-y-5">
-                {posts.map((p) => (
+                {(recentPosts ?? []).map((p) => (
                   <div key={p.slug} className="flex gap-4">
                     <Link
                       to={`/blog/${p.slug}`}
                       className="h-16 w-16 shrink-0 rounded bg-cover bg-center"
-                      style={{ backgroundImage: `url(${p.image})` }}
+                      style={{ backgroundImage: `url(${p.image ?? ''})` }}
                     />
                     <div>
                       <h4 className="text-sm leading-snug">

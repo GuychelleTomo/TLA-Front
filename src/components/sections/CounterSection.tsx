@@ -2,13 +2,16 @@ import { useState } from 'react'
 import { CounterItem } from '@/components/cards/CounterItem'
 import { Reveal } from '@/components/ui/Reveal'
 import { VideoModal } from '@/components/ui/VideoModal'
-import { counters } from '@/data/counters'
+import { useAsync } from '@/hooks/useAsync'
+import { getStats } from '@/services/content'
+import { Skeleton } from '@/components/ui/Skeleton'
 
 const VIDEO_URL = 'https://player.vimeo.com/video/45830194'
 
 /** Section compteurs : fond parallax + bloc vidéo + 4 compteurs animés. */
 export function CounterSection() {
   const [open, setOpen] = useState(false)
+  const { data: counters, loading } = useAsync(() => getStats(), [])
 
   return (
     <section
@@ -50,11 +53,15 @@ export function CounterSection() {
 
         {/* Compteurs */}
         <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
-          {counters.map((counter) => (
-            <Reveal key={counter.label}>
-              <CounterItem {...counter} />
-            </Reveal>
-          ))}
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} dark className="mx-auto h-[104px] w-40" />
+              ))
+            : (counters ?? []).map((counter) => (
+                <Reveal key={counter.label}>
+                  <CounterItem {...counter} />
+                </Reveal>
+              ))}
         </div>
       </div>
 

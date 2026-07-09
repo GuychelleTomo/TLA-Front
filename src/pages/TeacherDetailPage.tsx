@@ -1,12 +1,27 @@
 import { Link, useParams } from 'react-router-dom'
 import { PageHero } from '@/components/ui/PageHero'
 import { Reveal } from '@/components/ui/Reveal'
-import { teachers } from '@/data/teachers'
+import { useAsync } from '@/hooks/useAsync'
+import { getTeacher } from '@/services/content'
 
 /** Page de détail d'un coach : biographie, CV, langues, fonction, profils web. */
 export function TeacherDetailPage() {
   const { slug } = useParams()
-  const teacher = teachers.find((t) => t.slug === slug)
+  const { data: teacher, loading } = useAsync(() => getTeacher(slug ?? ''), [slug])
+
+  if (loading) {
+    return (
+      <>
+        <PageHero
+          title="Coach"
+          crumbs={[{ label: 'Accueil', to: '/' }, { label: 'Équipe', to: '/equipe' }]}
+        />
+        <section className="py-24 text-center">
+          <p className="text-lg text-black/50">Chargement…</p>
+        </section>
+      </>
+    )
+  }
 
   if (!teacher) {
     return (
@@ -27,6 +42,11 @@ export function TeacherDetailPage() {
       </>
     )
   }
+
+  const biography = teacher.biography ?? []
+  const education = teacher.education ?? []
+  const languages = teacher.languages ?? []
+  const links = teacher.links ?? []
 
   return (
     <>
@@ -50,7 +70,7 @@ export function TeacherDetailPage() {
                 <div className="relative mx-auto md:mx-0">
                   <div
                     className="h-64 w-56 rounded-2xl bg-cover bg-center shadow-xl ring-4 ring-white"
-                    style={{ backgroundImage: `url(${teacher.image})` }}
+                    style={{ backgroundImage: `url(${teacher.image ?? ''})` }}
                   />
                   <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-dark px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-lg">
                     {teacher.experienceYears} ans d'expérience
@@ -67,7 +87,7 @@ export function TeacherDetailPage() {
 
                   <div className="mt-5 flex flex-wrap items-center justify-center gap-3 md:justify-start">
                     <a
-                      href={teacher.cv}
+                      href={teacher.cv ?? undefined}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition hover:bg-primary-light"
@@ -75,7 +95,7 @@ export function TeacherDetailPage() {
                       <i className="ion-ios-document text-lg" /> Lire le CV
                     </a>
                     <a
-                      href={teacher.cv}
+                      href={teacher.cv ?? undefined}
                       download
                       className="inline-flex items-center gap-2 rounded-full border-2 border-primary px-6 py-3 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white"
                     >
@@ -107,7 +127,7 @@ export function TeacherDetailPage() {
                     <h3 className="text-2xl font-bold text-dark">Biographie</h3>
                   </header>
                   <div className="space-y-4 leading-relaxed text-black/70">
-                    {teacher.biography.map((p, i) => (
+                    {biography.map((p, i) => (
                       <p key={i}>{p}</p>
                     ))}
                   </div>
@@ -124,7 +144,7 @@ export function TeacherDetailPage() {
                     <h3 className="text-2xl font-bold text-dark">Parcours & diplômes</h3>
                   </header>
                   <ul className="space-y-3">
-                    {teacher.education.map((e) => (
+                    {education.map((e) => (
                       <li key={e} className="flex items-start gap-3 text-black/70">
                         <i className="ion-ios-arrow-forward mt-1.5 text-primary" />
                         <span>{e}</span>
@@ -155,8 +175,8 @@ export function TeacherDetailPage() {
                     <i className="ion-ios-globe text-primary" /> Langues parlées
                   </h4>
                   <ul className="mt-4 space-y-3">
-                    {teacher.languages.map((l) => (
-                      <li key={l.name} className="flex items-center justify-between">
+                    {languages.map((l) => (
+                      <li key={l.name ?? ''} className="flex items-center justify-between">
                         <span className="font-medium text-dark">{l.name}</span>
                         <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                           {l.level}
@@ -174,7 +194,7 @@ export function TeacherDetailPage() {
                     <i className="ion-ios-link text-primary" /> Profil & pages web
                   </h4>
                   <ul className="mt-4 space-y-2">
-                    {teacher.links.map((link) => (
+                    {links.map((link) => (
                       <li key={link.label}>
                         <a
                           href={link.url}

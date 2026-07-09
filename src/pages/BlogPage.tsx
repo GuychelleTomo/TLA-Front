@@ -1,11 +1,12 @@
 import { PageHero } from '@/components/ui/PageHero'
 import { BlogCard } from '@/components/cards/BlogCard'
 import { Reveal } from '@/components/ui/Reveal'
-import { posts } from '@/data/posts'
+import { useAsync } from '@/hooks/useAsync'
+import { getPosts } from '@/services/content'
+import { CardsSkeleton } from '@/components/ui/Skeleton'
 
 export function BlogPage() {
-  // Duplique les articles pour remplir une grille de blog plus complète.
-  const allPosts = [...posts, ...posts.map((p) => ({ ...p, slug: `${p.slug}-2` }))]
+  const { data: posts, loading, error } = useAsync(() => getPosts(), [])
 
   return (
     <>
@@ -15,13 +16,19 @@ export function BlogPage() {
       />
       <section className="py-24">
         <div className="mx-auto max-w-6xl px-4">
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {allPosts.map((post, i) => (
-              <Reveal key={post.slug} delay={(i % 3) * 100}>
-                <BlogCard {...post} />
-              </Reveal>
-            ))}
-          </div>
+          {loading ? (
+            <CardsSkeleton count={6} gridClass="grid gap-8 md:grid-cols-2 lg:grid-cols-3" cardClass="h-[380px]" />
+          ) : error ? (
+            <p className="py-10 text-center text-black/50">Impossible de charger les articles.</p>
+          ) : (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {(posts ?? []).map((post, i) => (
+                <Reveal key={post.slug} delay={(i % 3) * 100}>
+                  <BlogCard {...post} />
+                </Reveal>
+              ))}
+            </div>
+          )}
 
           {/* Pagination simple (statique) */}
           <div className="mt-12 flex justify-center gap-2">

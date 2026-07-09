@@ -4,7 +4,8 @@ import 'yet-another-react-lightbox/styles.css'
 import { PageHero } from '@/components/ui/PageHero'
 import { VideoModal } from '@/components/ui/VideoModal'
 import { Reveal } from '@/components/ui/Reveal'
-import { galleryImages, galleryVideos, gallerySessions } from '@/data/gallery'
+import { useAsync } from '@/hooks/useAsync'
+import { getGallerySessions, getGalleryItems } from '@/services/content'
 import { cn } from '@/lib/cn'
 
 type TypeFilter = 'all' | 'photos' | 'videos'
@@ -44,10 +45,17 @@ export function GalleryPage() {
   const [photoIndex, setPhotoIndex] = useState(-1)
   const [video, setVideo] = useState<string | null>(null)
 
-  const inSession = (s: string) => session === 'all' || s === session
+  const { data: sessions, loading: sessionsLoading } = useAsync(() => getGallerySessions(), [])
+  const { data: items, loading: itemsLoading } = useAsync(() => getGalleryItems(), [])
 
-  const visiblePhotos = galleryImages.filter((img) => inSession(img.session))
-  const visibleVideos = galleryVideos.filter((v) => inSession(v.session))
+  const gallerySessions = sessions ?? []
+  const allItems = items ?? []
+  const loading = sessionsLoading || itemsLoading
+
+  const inSession = (s?: string) => session === 'all' || s === session
+
+  const visiblePhotos = allItems.filter((it) => it.type === 'photo' && inSession(it.session))
+  const visibleVideos = allItems.filter((it) => it.type === 'video' && inSession(it.session))
 
   const showPhotos = type === 'all' || type === 'photos'
   const showVideos = type === 'all' || type === 'videos'
@@ -85,7 +93,9 @@ export function GalleryPage() {
             ))}
           </div>
 
-          {isEmpty ? (
+          {loading ? (
+            <p className="py-10 text-center text-black/50">Chargement…</p>
+          ) : isEmpty ? (
             <p className="py-10 text-center text-black/50">
               Aucun média pour cette sélection pour le moment.
             </p>
@@ -94,13 +104,13 @@ export function GalleryPage() {
               {/* Vidéos */}
               {showVideos &&
                 visibleVideos.map((v, i) => (
-                  <Reveal key={v.embed} delay={(i % 4) * 80}>
+                  <Reveal key={v.embed ?? i} delay={(i % 4) * 80}>
                     <button
                       type="button"
                       onClick={() => setVideo(v.embed)}
                       aria-label={`Lire la vidéo : ${v.title}`}
                       className="group relative flex h-56 w-full items-center justify-center overflow-hidden rounded bg-cover bg-center"
-                      style={{ backgroundImage: `url(${v.poster})` }}
+                      style={{ backgroundImage: `url(${v.poster ?? ''})` }}
                     >
                       <span className="absolute inset-0 bg-dark/40 transition-colors group-hover:bg-dark/60" />
                       <span className="relative flex h-16 w-16 items-center justify-center rounded-full bg-white text-2xl text-primary transition-transform group-hover:scale-110">
@@ -116,13 +126,13 @@ export function GalleryPage() {
               {/* Photos */}
               {showPhotos &&
                 visiblePhotos.map((img, i) => (
-                  <Reveal key={img.src} delay={(i % 4) * 80}>
+                  <Reveal key={img.src ?? i} delay={(i % 4) * 80}>
                     <button
                       type="button"
                       onClick={() => setPhotoIndex(i)}
                       aria-label="Agrandir l'image"
                       className="group relative flex h-56 w-full items-center justify-center overflow-hidden rounded bg-cover bg-center"
-                      style={{ backgroundImage: `url(${img.src})` }}
+                      style={{ backgroundImage: `url(${img.src ?? ''})` }}
                     >
                       <span className="absolute inset-0 bg-dark/40 opacity-0 transition-opacity group-hover:opacity-100" />
                       <span className="ion-ios-search relative text-3xl text-white opacity-0 transition-opacity group-hover:opacity-100" />
@@ -139,7 +149,7 @@ export function GalleryPage() {
         open={photoIndex >= 0}
         index={Math.max(photoIndex, 0)}
         close={() => setPhotoIndex(-1)}
-        slides={visiblePhotos.map((img) => ({ src: img.src }))}
+        slides={visiblePhotos.map((img) => ({ src: img.src ?? '' }))}
       />
 
       {/* Modale vidéo */}

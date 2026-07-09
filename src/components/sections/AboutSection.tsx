@@ -1,8 +1,13 @@
 import { Reveal } from '@/components/ui/Reveal'
-import { aboutFeatures } from '@/data/services'
+import { useAsync } from '@/hooks/useAsync'
+import { getServices } from '@/services/content'
 
 /** Section "À propos" : image + texte + grille d'atouts. */
 export function AboutSection() {
+  const { data: aboutFeatures } = useAsync(() => getServices('about'), [])
+  // Réserve l'espace de la grille d'atouts pendant le chargement (évite le saut).
+  const features = aboutFeatures ?? Array.from({ length: 6 }).map(() => null)
+
   return (
     <section className="py-24">
       <div className="mx-auto max-w-6xl px-4">
@@ -18,17 +23,21 @@ export function AboutSection() {
             </p>
 
             <div className="mt-8 grid gap-6 sm:grid-cols-2">
-              {aboutFeatures.map((f) => (
-                <div key={f.title} className="flex gap-3">
-                  <div className="mt-1 text-2xl text-primary">
-                    <span className={f.icon} />
+              {features.map((f, i) =>
+                f ? (
+                  <div key={f.title} className="flex gap-3">
+                    <div className="mt-1 text-2xl text-primary">
+                      <span className={f.icon ?? undefined} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg text-black/80">{f.title}</h3>
+                      <p className="text-sm">{f.text}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg text-black/80">{f.title}</h3>
-                    <p className="text-sm">{f.text}</p>
-                  </div>
-                </div>
-              ))}
+                ) : (
+                  <div key={i} className="h-16 animate-pulse rounded-lg bg-black/[0.06]" />
+                ),
+              )}
             </div>
           </Reveal>
 

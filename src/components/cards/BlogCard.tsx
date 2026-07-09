@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import type { Post } from '@/data/posts'
+import type { Post } from '@/types/content'
 import { Button } from '@/components/ui/Button'
 
 /** Carte d'un article de blog (image + date + extrait). */
@@ -9,7 +9,7 @@ export function BlogCard({ slug, image, day, month, year, title, excerpt, author
       <Link
         to={`/blog/${slug}`}
         className="flex h-[300px] items-end bg-cover bg-center"
-        style={{ backgroundImage: `url('${image}')` }}
+        style={{ backgroundImage: `url('${image ?? ''}')` }}
       >
         <div className="bg-primary p-2 text-center leading-tight text-white">
           <span className="block text-2xl font-bold">{day}</span>
