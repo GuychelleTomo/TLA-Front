@@ -1,6 +1,7 @@
 import { BlogCard } from '@/components/cards/BlogCard'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import { Reveal } from '@/components/ui/Reveal'
+import { Button } from '@/components/ui/Button'
 import { useAsync } from '@/hooks/useAsync'
 import { getPosts } from '@/services/content'
 import { CardsSkeleton } from '@/components/ui/Skeleton'
@@ -8,7 +9,7 @@ import { CardsSkeleton } from '@/components/ui/Skeleton'
 const subtitle =
   'Separated they live in. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country'
 
-/** Section "Recent Blog" de la home. */
+/** Section "Recent Blog" de la home (aperçu des 3 derniers articles). */
 export function RecentBlog() {
   const { data: posts, loading, error } = useAsync(() => getPosts(), [])
 
@@ -22,13 +23,16 @@ export function RecentBlog() {
           <p className="py-10 text-center text-black/50">Impossible de charger les articles.</p>
         ) : (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {(posts ?? []).map((post, i) => (
+            {(posts ?? []).slice(0, 3).map((post, i) => (
               <Reveal key={post.slug} delay={i * 100}>
                 <BlogCard {...post} />
               </Reveal>
             ))}
           </div>
         )}
+        <div className="mt-12 text-center">
+          <Button to="/blog">Voir tous les articles</Button>
+        </div>
       </div>
     </section>
   )
